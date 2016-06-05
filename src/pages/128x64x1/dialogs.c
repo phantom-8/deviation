@@ -92,6 +92,7 @@ static void binding_ok_cb(u8 state, void * data)
     (void)data;
     PROTOCOL_SetBindState(0); // interrupt the binding
     dialog = NULL;
+    PAGE_BindCleanup();	// return to main page if Bind is calling via shortcut
 }
 
 void PAGE_CloseBindingDialog()

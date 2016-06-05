@@ -32,6 +32,7 @@ PAGEDEF(PAGEID_USB,      PAGE_USBInit,         PAGE_USBEvent,         PAGE_USBEx
 #if DEBUG_WINDOW_SIZE
 PAGEDEF(PAGEID_DEBUGLOG, PAGE_DebuglogInit,    PAGE_DebuglogEvent,    NULL,               MAIN_MENU,   _tr_noop("Debuglog"))
 #endif
+PAGEDEF(PAGEID_BIND,     PAGE_BindInit,        NULL,                  NULL,               MAIN_MENU,   _tr_noop("Bind"))
 PAGEDEF(PAGEID_ABOUT,    PAGE_AboutInit,       NULL,                  NULL,               MAIN_MENU,   _tr_noop("About Deviation"))
 
 //Model menu

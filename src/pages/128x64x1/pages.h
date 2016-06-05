@@ -66,4 +66,7 @@ void PAGE_SplashEvent();
 void PAGE_SplashExit();
 void PAGE_VideoSetupInit(int page);
 void PAGE_LayoutEditInit(int page);
+
+void PAGE_BindInit(int page);
+void PAGE_BindCleanup();
 #endif
