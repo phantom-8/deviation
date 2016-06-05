@@ -144,6 +144,9 @@ HGTEST := $(shell mkdir -p $(ODIR); \
 ifeq "$(TYPE)" "dev"
   CFLAGS   := $(CFLAGS) -g -DBUILDTYPE_DEV
 endif
+ifeq "$(TYPE)" "elsie"
+  CFLAGS   := $(CFLAGS) -DELSIE
+endif
 ifdef MODULAR
 CFLAGS   +=  -DMODULAR=$(MODULAR)
 endif
@@ -224,6 +227,11 @@ ifdef MODULAR
 	rm -rf $(ODIR)/protocol
 endif
 ifeq "$(INCLUDE_FS)" "1"
+ifeq "$(TYPE)" "elsie"
+	cp fs/elsie/elsie_splash.bmp filesystem/$(TARGET)/media/splash.bmp
+else
+	cp fs/elsie/splash.bmp filesystem/$(TARGET)/media/splash.bmp
+endif
 	export p=`pwd`; cd filesystem/$(FILESYSTEM) && zip -ur $$p/deviation-$(HGVERSION).zip  *
 endif
 	zip -u deviation-$(HGVERSION).zip debug-$(HGVERSION).zip

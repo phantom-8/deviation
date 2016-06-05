@@ -14,6 +14,10 @@ void MCU_SerialNumber(u8 *var, int len)
         memcpy(var, &id[0], l);
         return;
     }
+#ifdef ELSIE
+    memset(var, 0, len);
+    memcpy(var, "\x56\xFF\x69\x06\x50\x67\x48\x56\x32\x47\x22\x87", len > 12 ? 12 : len);
+#else
     int l = len > 12 ? 12 : len;
     // Every STM32 should have 12 bytes long unique id at 0x1FFFF7E8
     const u8 *stm32id = (u8*) 0x1FFFF7E8;
@@ -23,4 +27,5 @@ void MCU_SerialNumber(u8 *var, int len)
     while(l < len) {
         var[l++] = 0x00;
     }
+#endif
 }

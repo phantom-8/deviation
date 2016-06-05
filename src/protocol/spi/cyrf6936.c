@@ -127,6 +127,9 @@ void CYRF_GetMfgData(u8 data[])
         MCU_SerialNumber(data, 6);
         return;
     }
+#ifdef ELSIE
+    memcpy(data, "\x6D\x20\x0E\x35\xCB\xFE", 6);
+#else
     /* Fuses power on */
     CYRF_WriteRegister(CYRF_25_MFG_ID, 0xFF);
 
@@ -134,6 +137,7 @@ void CYRF_GetMfgData(u8 data[])
 
     /* Fuses power off */
     CYRF_WriteRegister(CYRF_25_MFG_ID, 0x00); 
+#endif
 }
 
 #if HAS_MULTIMOD_SUPPORT
