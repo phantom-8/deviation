@@ -42,7 +42,7 @@
 #define USE_FIXED_MFGID
 #define BIND_COUNT 5
 #else
-#define BIND_COUNT 1000
+#define BIND_COUNT 500		// 1000
 #endif
 
 // Timeout for callback in uSec, 4ms=4000us for V202

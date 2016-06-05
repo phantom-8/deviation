@@ -38,7 +38,7 @@
 #ifdef EMULATOR
 #define BIND_COUNT 3
 #else
-#define BIND_COUNT 2500
+#define BIND_COUNT 1400		// 2500
 #endif
 
 #define PACKET_PERIOD 1510UL
@@ -363,7 +363,7 @@ static void initialize(u8 bind) {
     chanoffset = (id & 0xff) / 16;
     if (bind || ! Model.fixed_id) {
         counter = BIND_COUNT;
-        PROTOCOL_SetBindState(2500 * PACKET_PERIOD / 1000); //msec
+        PROTOCOL_SetBindState(1400 * PACKET_PERIOD / 1000); //msec
     } else {
         counter = 0;
     }

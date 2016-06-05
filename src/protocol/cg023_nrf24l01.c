@@ -43,7 +43,7 @@
 #define BIND_COUNT 20
 #define dbgprintf printf
 #else
-#define BIND_COUNT 800  // 6 seconds
+#define BIND_COUNT 250		// 2 seconds // 800  // 6 seconds
 //printf inside an interrupt handler is really dangerous
 //this shouldn't be enabled even in debug builds without explicitly
 //turning it on
