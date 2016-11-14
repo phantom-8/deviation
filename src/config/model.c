@@ -160,6 +160,7 @@ static const char * const SAFETY_VAL[SAFE_MAX+1] = { "none", "min", "zero", "max
 static const char SECTION_TELEMALARM[] = "telemalarm";
 static const char TELEM_SRC[] = "source";
 static const char TELEM_ABOVE[] =  "above";
+static const char TELEM_AMP[] =  "amp";
 static const char TELEM_VALUE[] = "value";
 
 /* Section: Datalog */
@@ -892,6 +893,13 @@ int assign_int(void* ptr, const struct struct_map *map, int map_size)
                 m->telem_flags &= ~(1 << idx);
             return 1;
         }
+        if (MATCH_KEY(TELEM_AMP)) {
+            if (atoi(value))
+                m->telem_ampflags |= 1 << idx;
+            else
+                m->telem_ampflags &= ~(1 << idx);
+            return 1;
+        }
         if (MATCH_KEY(TELEM_VALUE)) {
             m->telem_alarm_val[idx] = atoi(value);
             return 1;
@@ -1209,6 +1217,8 @@ u8 CONFIG_WriteModel(u8 model_num) {
         fprintf(fh, "%s=%s\n", TELEM_SRC, TELEMETRY_ShortName(file, m->telem_alarm[idx]));
         if(WRITE_FULL_MODEL || (m->telem_flags & (1 << idx)))
             fprintf(fh, "%s=%d\n", TELEM_ABOVE, (m->telem_flags & (1 << idx)) ? 1 : 0);
+        if(WRITE_FULL_MODEL || (m->telem_ampflags & (1 << idx)))
+            fprintf(fh, "%s=%d\n", TELEM_AMP, (m->telem_ampflags & (1 << idx)) ? 1 : 0);
         fprintf(fh, "%s=%d\n", TELEM_VALUE, m->telem_alarm_val[idx]);
     }
 #if HAS_DATALOG

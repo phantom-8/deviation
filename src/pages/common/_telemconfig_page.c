@@ -63,16 +63,29 @@ static const char *gtlt_cb(guiObject_t *obj, int dir, void *data)
     int val = (long)data;
     u8 changed;
     u8 type = ((Model.telem_flags >> val) & 1);
-    type = GUI_TextSelectHelper(type, 0, 1, -dir, 1, 1, &changed);
+    u8 amp = ((Model.telem_ampflags >> val) & 1);
+    if (amp)
+        type = 2;
+    type = GUI_TextSelectHelper(type, 0, 2, -dir, 1, 1, &changed);
     if (changed) {
-        if (type) {
+        if (type == 1) {
             Model.telem_flags |= 1 << val;
+            Model.telem_ampflags &= ~(1 << val);
+        } else if (type == 0) {
+            Model.telem_flags &= ~(1 << val);
+            Model.telem_ampflags &= ~(1 << val);
         } else {
             Model.telem_flags &= ~(1 << val);
+            Model.telem_ampflags |= 1 << val;
         }
         TELEMETRY_ResetAlarm(val);
     }
-    return type ? "<=" : ">";
+    if (type == 0)
+        return(">");
+    else if (type == 1)
+        return("<=");
+    else
+        return(">&");
 }
 
 static const char *limit_cb(guiObject_t *obj, int dir, void *data)

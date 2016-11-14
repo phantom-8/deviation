@@ -322,13 +322,16 @@ void TELEMETRY_Alarm()
     }
     // don't need to check all the 6 telem-configs at one time, this is not a critical and urgent task
     // instead, check 1 of them at a time
+    if ((Model.telem_ampflags >> k) & 1)	// Skip 2 if the last process item has amp flag set
+        k = (k + 1) % TELEM_NUM_ALARMS;
     k = (k + 1) % TELEM_NUM_ALARMS;
     if (current_time >= alarm_time[k]) {
         alarm_time[k] = current_time + CHECK_DURATION;
         if (! TELEMETRY_IsUpdated(Model.telem_alarm[k])) {
             TELEMETRY_ResetAlarm(k);
-        } else if ((TELEMETRY_GetValue( Model.telem_alarm[k] ) - mute_value[k] <=
-                                        Model.telem_alarm_val[k]) == ((Model.telem_flags >> k) & 1)) {
+        } else if ((!((Model.telem_ampflags >> k) & 1) && ((TELEMETRY_GetValue( Model.telem_alarm[k] ) - mute_value[k] <= Model.telem_alarm_val[k]) == ((Model.telem_flags >> k) & 1)))
+              || ((((Model.telem_ampflags >> k) & 1) && ((TELEMETRY_GetValue( Model.telem_alarm[k] ) - mute_value[k] <= Model.telem_alarm_val[k]) == ((Model.telem_flags >> k) & 1)))
+                  && ((TELEMETRY_GetValue( Model.telem_alarm[k+1] ) - mute_value[k+1] <= Model.telem_alarm_val[k+1]) == ((Model.telem_flags >> (k+1)) & 1)))) {
             if (!alarm_state[k]) {
                 alarm_state[k]++;
 #ifdef DEBUG_TELEMALARM
@@ -375,7 +378,8 @@ void TELEMETRY_MuteAlarm()
 int TELEMETRY_HasAlarm(int src)
 {
     for(int i = 0; i < TELEM_NUM_ALARMS; i++)
-        if(Model.telem_alarm[i] == src)
-            return (alarm_state[i]==1);
+        // Need to check all entries in case the same alarm type is used more than once
+        if ((Model.telem_alarm[i] == src) && (alarm_state[i]==1))
+            return (1);
     return 0;
 }

@@ -46,6 +46,7 @@ struct Model {
     u8 telem_alarm[TELEM_NUM_ALARMS];
     s32 telem_alarm_val[TELEM_NUM_ALARMS];
     u8 telem_flags;
+    u8 telem_ampflags;
     MixerMode mixer_mode;
     s8 ppm_map[MAX_PPM_IN_CHANNELS];
     u8 padding_1[2];
