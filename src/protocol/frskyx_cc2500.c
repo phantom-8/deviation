@@ -41,12 +41,16 @@ static const char * const frskyx_opts[] = {
   _tr_noop("Failsafe"), "Hold", "NoPulse", "RX", NULL,
   _tr_noop("AD2GAIN"),  "0", "2000", "655361", NULL,       // big step 10, little step 1
   _tr_noop("Freq-Fine"),  "-127", "127", NULL,
+#if HAS_EXTENDED_TELEMETRY
+  _tr_noop("SerialOut"), _tr_noop("Off"), _tr_noop("On"), NULL,
+#endif
   NULL
 };
 enum {
     PROTO_OPTS_FAILSAFE,
     PROTO_OPTS_AD2GAIN,
     PROTO_OPTS_FREQFINE,
+    PROTO_OPTS_SERIALOUT,
     LAST_PROTO_OPT,
 };
 ctassert(LAST_PROTO_OPT <= NUM_PROTO_OPTS, too_many_protocol_opts);
@@ -54,6 +58,11 @@ ctassert(LAST_PROTO_OPT <= NUM_PROTO_OPTS, too_many_protocol_opts);
 #define FAILSAFE_HOLD    0
 #define FAILSAFE_NOPULSE 1
 #define FAILSAFE_RX      2
+
+#if HAS_EXTENDED_TELEMETRY
+#define SERIALOUT_OFF 0
+#define SERIALOUT_ON 1
+#endif
 
 #define PACKET_SIZE 30
 
@@ -395,8 +404,9 @@ static void processSportPacket(u8 *packet) {
     u8  prim = packet[1];
     u16 id = *((u16 *)(packet+2));
 
-    if (!PPMin_Mode())
-        serial_echo(packet);   // echo to trainer port
+    if (Model.proto_opts[PROTO_OPTS_SERIALOUT] == SERIALOUT_ON)
+        if (!PPMin_Mode())
+            serial_echo(packet);   // echo to trainer port
 
     if (prim != DATA_FRAME)
         return;
@@ -836,7 +846,8 @@ static void initialize(int bind)
     seq_last_rcvd = 8;
 #if HAS_EXTENDED_TELEMETRY
     Telemetry.value[TELEM_FRSKY_MIN_CELL] = TELEMETRY_GetMaxValue(TELEM_FRSKY_MIN_CELL);
-    UART_SetDataRate(57600);    // set for s.port compatibility
+    if (Model.proto_opts[PROTO_OPTS_SERIALOUT] == SERIALOUT_ON)
+        UART_SetDataRate(57600);    // set for s.port compatibility
 #endif
 
     u32 seed = get_tx_id();
@@ -882,7 +893,8 @@ const void *FRSKYX_Cmds(enum ProtoCmds cmd)
         case PROTOCMD_RESET:
         case PROTOCMD_DEINIT:
 #if HAS_EXTENDED_TELEMETRY
-            UART_SetDataRate(0);  // restore data rate to default
+            if (Model.proto_opts[PROTO_OPTS_SERIALOUT] == SERIALOUT_ON)
+                UART_SetDataRate(0);  // restore data rate to default
 #endif
             CLOCK_StopTimer();
             return (void *)(CC2500_Reset() ? 1L : -1L);
